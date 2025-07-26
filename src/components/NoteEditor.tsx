@@ -1,35 +1,54 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Form } from 'react-bootstrap';
 import { useNotesStore } from '../store/notesStore';
+import { useForm } from 'react-hook-form';
 
 
 const NoteEditor: React.FC = () => {
-  const { currentNote, updateNote } = useNotesStore();
 
-  const [title, setTitle] = useState(currentNote?.title || '');
-  const [content, setContent] = useState(currentNote?.content || '');
+  console.log('NoteEditor')
 
-  useEffect(() => {
-    if (currentNote) {
-      // setTitle(currentNote.title);
-      // setContent(currentNote.content);
+  const currentNote = useNotesStore( s => s.currentNote);
+  const updateNote = useNotesStore( s => s.updateNote);
+
+  // const { currentNote, updateNote } = useNotesStore();
+  const { register, setValue, getValues } = useForm({
+    defaultValues: {
+      title: currentNote?.title || '',
+      content: currentNote?.content || ''
+    }
+  });
+
+  const initValues = () => {
+    if (currentNote == null) return
+    setValue('title', currentNote.title)
+    setValue('content', currentNote.content)
+  }
+
+  const save = () => {
+    if (currentNote == null) return
+    
+    const values = getValues();
+    if (currentNote.title === values.title 
+      && currentNote.content === values.content 
+    ) return
+
+    updateNote({ id: currentNote.id, ...values });
+  };
+
+  useEffect( () => {
+    initValues()
+    return () => {
+      save()
     }
   }, [ currentNote?.id ]);
 
-  useEffect(() => {
-    return () => {
-      if (currentNote) {
-        updateNote({ id: currentNote.id, title, content });
-      }
-    };
-  }, [currentNote, title, content ]);
 
-  const onTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.target.value);
-  };
-
-  const onContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setContent(e.target.value);
+  const handleTitleBlur = () => {
+    const values = getValues();
+    if (currentNote?.title !== values.title) {
+      updateNote({ id: currentNote.id, title: values.title, content: values.content });
+    }
   };
 
   if (!currentNote) {
@@ -43,9 +62,9 @@ const NoteEditor: React.FC = () => {
           <Form.Label>Title</Form.Label>
           <Form.Control
             type="text"
-            value={title}
-            onChange={onTitleChange}
+            { ...register('title') }
             placeholder="Title"
+            onBlur={handleTitleBlur}
           />
         </Form.Group>
         <Form.Group className="mb-3">
@@ -53,8 +72,7 @@ const NoteEditor: React.FC = () => {
           <Form.Control
             as="textarea"
             rows={5}
-            value={content}
-            onChange={onContentChange}
+            { ...register('content') }
             placeholder="Content"
           />
         </Form.Group>

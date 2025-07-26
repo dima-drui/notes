@@ -78,8 +78,11 @@ export const useNotesStore = create<NotesState>((set, get) => ({
   updateNote: (note: NoteUpdateParams) => {
     try {
       DB.update(note);
-      get().loadNotesList();
-      get().selectNote(note.id);
+      set( 
+        s => ({ 
+            noteList: [ ...s.noteList.map( n => n.id == note.id ? note : n  ) ] 
+        })
+      );
     } catch (error) {
       logger.error('Error updating note', error);
       throw error;

@@ -1,10 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import NotesList from '../components/NotesList';
 import NoteEditor from '../components/NoteEditor';
+import { useNotesStore } from '../store/notesStore';
 
 
 const NotesPage: React.FC = () => {
+
+  console.log('NotesPage')
+
+  const loadNotesList = useNotesStore( s => s.loadNotesList );
+
+  useEffect( () => {
+    loadNotesList()
+  }, [] )
 
   return (
     <Container

@@ -7,7 +7,13 @@ import { NoteNew } from '../models/Note';
 
 const NotesList: React.FC = () => {
 
-  const { noteList, loadNotesList, addNote, removeNote, selectNote } = useNotesStore();
+  console.log('NotesList')
+
+  const noteList = useNotesStore( s => s.noteList);
+  const addNote = useNotesStore( s => s.addNote);
+  const removeNote = useNotesStore( s => s.removeNote);
+  const selectNote = useNotesStore( s => s.selectNote);
+  // const { loadNotesList, addNote, removeNote, selectNote } = useNotesStore();
 
   const handleSelect = (noteId: string) => selectNote(noteId);
 
@@ -15,10 +21,6 @@ const NotesList: React.FC = () => {
     e.stopPropagation(); 
     removeNote(noteId);
   };
-
-  useEffect( () => {
-    loadNotesList()
-  }, [] )
 
   const handleCreateNote = () => {
     const newNote: NoteNew = {
