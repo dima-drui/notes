@@ -16,12 +16,13 @@ interface NotesState {
   noteList: NoteItemList[];
   currentNote: Note | null;
   currentSort: NoteSortCriteria; // Added currentSort property
-  addNote: (note: NoteNew) => void;
-  removeNote: (id: string) => void;
-  selectNote: (id?: string) => void;
-  queryNotes: (params: { query?: Partial<Note>; options?: EntityQueryOptions<Note> }) => void;
-  loadNotesList: () => void;
+  addNote: (note: NoteNew) => Promise<string | undefined>;
+  removeNote: (id: string) => Promise<number>;
+  setSelectedNote: (id?: string) => Promise<void>;
+  queryNotes: (params: { query?: Partial<Note>; options?: EntityQueryOptions<Note> }) => Promise<void>;
+  loadNotesList: () => Promise<void>;
   updateNote: (note: NoteUpdateParams) => void;
+  updateListNote: (note: NoteUpdateParams) => void;
   sortNotes: (criteria: NoteSortCriteria) => void;
 }
 
@@ -30,33 +31,34 @@ export const useNotesStore = create<NotesState>( (set, get) => ({
   currentNote: null,
   currentSort: { field: 'title', direction: 'asc' }, // Initialized currentSort
 
-  addNote: (note: NoteNew) => {
+  addNote: async (note: NoteNew): Promise<string | undefined> => {
     try {
-      const id = DB.create(note);
-      get().loadNotesList();
-      get().selectNote(id);
+      return await DB.create(note);
     } catch (error) {
       logger.error('Error adding note', error);
       throw error;
     }
   },
 
-  removeNote: (id: string) => {
+  removeNote: async (id: string): Promise<number> => {
     try {
-      DB.delete(id);
-      get().loadNotesList();
-      get().selectNote();
+     return await DB.delete(id);
     } catch (error) {
       logger.error('Error removing note', error);
       throw error;
     }
   },
 
-  selectNote: (id?: string) => {
+  setSelectedNote: async (id?: string): Promise<void> => {
     try {
       if (id) {
-        const note = DB.read({ query: { id } })[0] || null;
-        set({ currentNote: note });
+        const notes = await DB.read({ query: { id } });
+        const note = notes?.[0];
+        if (!note) {
+          logger.error('Selected note was not found', { id });
+          throw new Error('Selected note was not found');
+        }
+        set({ currentNote: note || null });
       } else {
         set({ currentNote: null });
       }
@@ -66,9 +68,9 @@ export const useNotesStore = create<NotesState>( (set, get) => ({
     }
   },
 
-  queryNotes: ({ query = {}, options = {} }: { query?: Partial<Note>; options?: EntityQueryOptions<Note> }) => {
+  queryNotes: async ({ query = {}, options = {} }: { query?: Partial<Note>; options?: EntityQueryOptions<Note> }): Promise<void> => {
     try {
-      const queriedNotes = DB.read({ query, options });
+      const queriedNotes = await DB.read({ query, options });
       set({ noteList: queriedNotes });
     } catch (error) {
       logger.error('Error querying notes', error);
@@ -76,10 +78,9 @@ export const useNotesStore = create<NotesState>( (set, get) => ({
     }
   },
 
-  loadNotesList: () => {
+  loadNotesList: async (): Promise<void> => {
     try {
-      const queriedNotes = DB.read( { options: { projection: ['id',  'title', 'createdAt', 'updatedAt'] }} );
-      set({ noteList: queriedNotes });
+      await get().queryNotes({ options: { projection: ['id',  'title', 'createdAt', 'updatedAt'] } })
     } catch (error) {
       logger.error('Error loading notes list', error);
       throw error;
@@ -89,6 +90,14 @@ export const useNotesStore = create<NotesState>( (set, get) => ({
   updateNote: (note: NoteUpdateParams) => {
     try {
       DB.update(note);
+      get().updateListNote(note)
+    } catch (error) {
+      logger.error('Error updating note', error);
+      throw error;
+    }
+  },
+
+  updateListNote: (note: NoteUpdateParams) => {
       set((s) => ({ 
         noteList: s.noteList.map((n) =>
           n.id === note.id
@@ -96,10 +105,6 @@ export const useNotesStore = create<NotesState>( (set, get) => ({
             : n
         ),
       }));
-    } catch (error) {
-      logger.error('Error updating note', error);
-      throw error;
-    }
   },
 
   sortNotes: (criteria: NoteSortCriteria) => {

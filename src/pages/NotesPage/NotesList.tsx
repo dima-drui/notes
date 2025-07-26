@@ -22,11 +22,11 @@ const NotesList: React.FC = () => {
   const noteList = useNotesStore( s => s.noteList);
   const addNote = useNotesStore( s => s.addNote);
   const removeNote = useNotesStore( s => s.removeNote);
-  const selectNote = useNotesStore( s => s.selectNote);
+  const setSelectedNote = useNotesStore( s => s.setSelectedNote);
   const sortNotes = useNotesStore((s) => s.sortNotes);
   const currentSort = useNotesStore(s => s.currentSort);
 
-  const handleSelect = (e: React.MouseEvent, noteId: string) => selectNote(noteId);
+  const handleSelect = (_: React.MouseEvent, noteId: string) => setSelectedNote(noteId);
 
   const handleRemove = (e: React.MouseEvent, noteId: string) => {
     e.stopPropagation(); 
