@@ -5,22 +5,30 @@ import { EntityQueryOptions } from '../models';
 import { logger } from '../utils/logger';
 
 
-export type NoteItemList = Pick<Note, 'id' | 'title'>
+export type NoteItemList = Pick<Note, 'id' | 'title' | 'createdAt' | 'updatedAt'>;
+
+export type NoteSortCriteria = {
+  field: 'title' | 'createdAt' | 'updatedAt';
+  direction: 'asc' | 'desc';
+};
 
 interface NotesState {
   noteList: NoteItemList[];
   currentNote: Note | null;
+  currentSort: NoteSortCriteria; // Added currentSort property
   addNote: (note: NoteNew) => void;
   removeNote: (id: string) => void;
   selectNote: (id?: string) => void;
   queryNotes: (params: { query?: Partial<Note>; options?: EntityQueryOptions<Note> }) => void;
   loadNotesList: () => void;
   updateNote: (note: NoteUpdateParams) => void;
+  sortNotes: (criteria: NoteSortCriteria) => void;
 }
 
 export const useNotesStore = create<NotesState>( (set, get) => ({
   noteList: [],
   currentNote: null,
+  currentSort: { field: 'title', direction: 'asc' }, // Initialized currentSort
 
   addNote: (note: NoteNew) => {
     try {
@@ -70,7 +78,7 @@ export const useNotesStore = create<NotesState>( (set, get) => ({
 
   loadNotesList: () => {
     try {
-      const queriedNotes = DB.read( { options: { projection: ['id',  'title'] }} );
+      const queriedNotes = DB.read( { options: { projection: ['id',  'title', 'createdAt', 'updatedAt'] }} );
       set({ noteList: queriedNotes });
     } catch (error) {
       logger.error('Error loading notes list', error);
@@ -81,14 +89,30 @@ export const useNotesStore = create<NotesState>( (set, get) => ({
   updateNote: (note: NoteUpdateParams) => {
     try {
       DB.update(note);
-      set( 
-        s => ({ 
-            noteList: [ ...s.noteList.map( n => n.id == note.id ? note : n  ) ] 
-        })
-      );
+      set((s) => ({ 
+        noteList: s.noteList.map((n) =>
+          n.id === note.id
+            ? { id: note.id, title: note.title, createdAt: n.createdAt, updatedAt: new Date() }
+            : n
+        ),
+      }));
     } catch (error) {
       logger.error('Error updating note', error);
       throw error;
     }
+  },
+
+  sortNotes: (criteria: NoteSortCriteria) => {
+    const { field, direction } = criteria;
+    const { noteList, currentSort } = get();
+
+    if (field === currentSort.field && direction === currentSort.direction) return;
+
+    const sortedNotes = [...noteList].sort((a, b) => {
+      const comparison = a[field] > b[field] ? 1 : -1;
+      return direction === 'asc' ? comparison : -comparison;
+    });
+
+    set({ noteList: sortedNotes, currentSort: criteria });
   },
 }));
