@@ -16,14 +16,14 @@ interface NotesState {
   noteList: NoteItemList[];
   currentNote: Note | null;
   currentSort: NoteSortCriteria; // Added currentSort property
-  addNote: (note: NoteNew) => Promise<string | undefined>;
-  removeNote: (id: string) => Promise<number>;
-  setSelectedNote: (id?: string) => Promise<void>;
-  queryNotes: (params: { query?: Partial<Note>; options?: EntityQueryOptions<Note> }) => Promise<void>;
-  loadNotesList: () => Promise<void>;
-  updateNote: (note: NoteUpdateParams) => void;
-  updateListNote: (note: NoteUpdateParams) => void;
-  sortNotes: (criteria: NoteSortCriteria) => void;
+  addNote: (note: NoteNew) => Promise<string | undefined | { error: any }>;
+  removeNote: (id: string) => Promise<number | { error: any }>;
+  setSelectedNote: (id?: string) => Promise<void | { error: any }>;
+  queryNotes: (params: { query?: Partial<Note>; options?: EntityQueryOptions<Note> }) => Promise<void | { error: any }>;
+  loadNotesList: () => Promise<void | { error: any }>;
+  updateNote: (note: NoteUpdateParams) => Promise<number | { error: any }>;
+  updateListNote: (note: NoteUpdateParams) => void | { error: any };
+  sortNotes: (criteria: NoteSortCriteria) => void | { error: any };
 }
 
 export const useNotesStore = create<NotesState>( (set, get) => ({
@@ -31,32 +31,32 @@ export const useNotesStore = create<NotesState>( (set, get) => ({
   currentNote: null,
   currentSort: { field: 'title', direction: 'asc' }, // Initialized currentSort
 
-  addNote: async (note: NoteNew): Promise<string | undefined> => {
+  addNote: async (note: NoteNew) => {
     try {
       return await DB.create(note);
     } catch (error) {
       logger.error('Error adding note', error);
-      throw error;
+      return { error };
     }
   },
 
-  removeNote: async (id: string): Promise<number> => {
+  removeNote: async (id: string) => {
     try {
      return await DB.delete(id);
     } catch (error) {
       logger.error('Error removing note', error);
-      throw error;
+      return { error };
     }
   },
 
-  setSelectedNote: async (id?: string): Promise<void> => {
+  setSelectedNote: async (id?: string) => {
     try {
       if (id) {
         const notes = await DB.read({ query: { id } });
         const note = notes?.[0];
         if (!note) {
           logger.error('Selected note was not found', { id });
-          throw new Error('Selected note was not found');
+          return { error: "Selected note was not found" };
         }
         set({ currentNote: note || null });
       } else {
@@ -64,36 +64,38 @@ export const useNotesStore = create<NotesState>( (set, get) => ({
       }
     } catch (error) {
       logger.error('Error selecting note', error);
-      throw error;
+      return { error };
     }
   },
 
-  queryNotes: async ({ query = {}, options = {} }: { query?: Partial<Note>; options?: EntityQueryOptions<Note> }): Promise<void> => {
+  queryNotes: async ({ query = {}, options = {} }: { query?: Partial<Note>; options?: EntityQueryOptions<Note> }) => {
     try {
       const queriedNotes = await DB.read({ query, options });
       set({ noteList: queriedNotes });
     } catch (error) {
       logger.error('Error querying notes', error);
-      throw error;
+      return { error };
     }
   },
 
-  loadNotesList: async (): Promise<void> => {
+  loadNotesList: async () => {
     try {
       await get().queryNotes({ options: { projection: ['id',  'title', 'createdAt', 'updatedAt'] } })
     } catch (error) {
       logger.error('Error loading notes list', error);
-      throw error;
+      return { error };
     }
   },
 
-  updateNote: (note: NoteUpdateParams) => {
+  updateNote: async (note: NoteUpdateParams) => {
     try {
-      DB.update(note);
-      get().updateListNote(note)
+      throw new Error('errr')
+      // const updateQty = await DB.update(note);
+      // get().updateListNote(note)
+      // return updateQty
     } catch (error) {
       logger.error('Error updating note', error);
-      throw error;
+      return {error};
     }
   },
 
@@ -108,7 +110,7 @@ export const useNotesStore = create<NotesState>( (set, get) => ({
       }));
     } catch (error) {
       logger.error('Error updating list w note', {error, note});
-      throw error;
+      return { error };
     }
   },
 

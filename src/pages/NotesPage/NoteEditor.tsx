@@ -2,12 +2,14 @@ import React, { useEffect } from 'react';
 import { Form } from 'react-bootstrap';
 import { useNotesStore } from '../../store/notesStore';
 import { useForm } from 'react-hook-form';
+import { useToastStore, ToastType } from '../../store/toastStore';
 
 
 const NoteEditor: React.FC = () => {
 
   const currentNote = useNotesStore( s => s.currentNote);
   const updateNote = useNotesStore( s => s.updateNote);
+  const toast = useToastStore();
 
   const { register, setValue, getValues } = useForm({
     defaultValues: {
@@ -22,15 +24,18 @@ const NoteEditor: React.FC = () => {
     setValue('content', currentNote.content)
   }
 
-  const save = () => {
-    if (currentNote == null) return
-    
+  const save = async () => {
+    if (currentNote == null) return;
     const values = getValues();
-    if (currentNote.title === values.title 
-      && currentNote.content === values.content 
-    ) return
+    if (
+      currentNote.title === values.title &&
+      currentNote.content === values.content
+    ) return;
 
-    updateNote({ id: currentNote.id, ...values });
+    const res = await updateNote({ id: currentNote.id, ...values });
+    if ( res == 0 || (typeof res !== 'number' && res.error) ) {
+      toast.addToast("Failed to save the note. Please try again.", ToastType.ERROR);
+    }
   };
 
   useEffect( () => {
@@ -44,7 +49,7 @@ const NoteEditor: React.FC = () => {
   const handleTitleBlur = () => {
     const values = getValues();
     if (currentNote?.title !== values.title) {
-      updateNote({ id: currentNote.id, title: values.title, content: values.content });
+      save();
     }
   };
 

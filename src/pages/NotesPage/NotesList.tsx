@@ -5,6 +5,7 @@ import { NoteNew } from '../../models/Note';
 import { NoteListIem } from './NoteListIem';
 import { icons } from '../../utils/icons';
 import './NotesList.css';
+import { ToastType, useToastStore } from '../../store/toastStore';
 
 
 
@@ -25,20 +26,32 @@ const NotesList: React.FC = () => {
   const setSelectedNote = useNotesStore( s => s.setSelectedNote);
   const sortNotes = useNotesStore((s) => s.sortNotes);
   const currentSort = useNotesStore(s => s.currentSort);
+  const toast = useToastStore();
 
-  const handleSelect = (_: React.MouseEvent, noteId: string) => setSelectedNote(noteId);
-
-  const handleRemove = (e: React.MouseEvent, noteId: string) => {
-    e.stopPropagation(); 
-    removeNote(noteId);
+  const handleSelect = async (_: React.MouseEvent, noteId: string) => {
+    const res = await setSelectedNote(noteId);
+    if (res && res.error) {
+      toast.addToast("Failed to select the note. Please try again.", ToastType.ERROR);
+    }
   };
 
-  const handleCreateNote = () => {
+  const handleRemove = async (e: React.MouseEvent, noteId: string) => {
+    e.stopPropagation(); 
+    const res = await removeNote(noteId);
+    if (res == 0 || (typeof res !== 'number' && res.error)) {
+      toast.addToast("Failed to remove the note. Please try again.", ToastType.ERROR);
+    }
+  };
+
+  const handleCreateNote = async () => {
     const newNote: NoteNew = {
       title: "New Note",
       content: ""
     };
-    addNote(newNote);
+    const res = await addNote(newNote);
+    if (typeof res != 'string' && res.error) {
+      toast.addToast("Failed to create a note. Please try again.", ToastType.ERROR);
+    }
   };
 
 

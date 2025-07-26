@@ -23,7 +23,7 @@ interface ToastStore {
 
 export const useToastStore = create<ToastStore>((set, get) => ({
   toasts: [],
-  addToast: (message, type, duration = 30000) => {
+  addToast: (message, type, duration = 30_000) => {
     const id = uuidv4();
     set((state) => ({ toasts: [...state.toasts, { id, message, type, duration }] }));
 
