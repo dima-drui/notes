@@ -1,0 +1,6 @@
+.resize-handle {
+  width: 5px;
+  margin: 0 1rem;
+  cursor: col-resize;
+  background-color: #dee2e6;
+}

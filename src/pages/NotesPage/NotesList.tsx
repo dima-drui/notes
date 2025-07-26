@@ -4,7 +4,7 @@ import { useNotesStore } from '../../store/notesStore';
 import { NoteNew } from '../../models/Note';
 import { NoteListIem } from './NoteListIem';
 import { icons } from '../../utils/icons';
-
+import './NotesList.css';
 
 const NotesList: React.FC = () => {
 
@@ -42,8 +42,8 @@ const NotesList: React.FC = () => {
 
     <ListGroup 
       variant="flush"
-      className='h-100'
-      >
+      className='h-100 overflow-auto hide-scrollbar'
+    >
       { noteList.map( (note) => (
         <ListGroup.Item 
           key={note.id} 

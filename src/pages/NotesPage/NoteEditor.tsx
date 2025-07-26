@@ -53,7 +53,6 @@ const NoteEditor: React.FC = () => {
   }
 
   return (
-    <div>
       <Form>
         <Form.Group className="mb-3">
           <Form.Label>Title</Form.Label>
@@ -74,7 +73,6 @@ const NoteEditor: React.FC = () => {
           />
         </Form.Group>
       </Form>
-    </div>
   );
 };
 
