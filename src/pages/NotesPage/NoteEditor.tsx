@@ -1,17 +1,14 @@
 import React, { useEffect } from 'react';
 import { Form } from 'react-bootstrap';
-import { useNotesStore } from '../store/notesStore';
+import { useNotesStore } from '../../store/notesStore';
 import { useForm } from 'react-hook-form';
 
 
 const NoteEditor: React.FC = () => {
 
-  console.log('NoteEditor')
-
   const currentNote = useNotesStore( s => s.currentNote);
   const updateNote = useNotesStore( s => s.updateNote);
 
-  // const { currentNote, updateNote } = useNotesStore();
   const { register, setValue, getValues } = useForm({
     defaultValues: {
       title: currentNote?.title || '',

@@ -4,8 +4,11 @@ import { DB, NoteUpdateParams } from '../services/db';
 import { EntityQueryOptions } from '../models';
 import { logger } from '../utils/logger';
 
+
+export type NoteItemList = Pick<Note, 'id' | 'title'>
+
 interface NotesState {
-  noteList: Pick<Note, 'id' | 'title'>[];
+  noteList: NoteItemList[];
   currentNote: Note | null;
   addNote: (note: NoteNew) => void;
   removeNote: (id: string) => void;
@@ -15,7 +18,7 @@ interface NotesState {
   updateNote: (note: NoteUpdateParams) => void;
 }
 
-export const useNotesStore = create<NotesState>((set, get) => ({
+export const useNotesStore = create<NotesState>( (set, get) => ({
   noteList: [],
   currentNote: null,
 

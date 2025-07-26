@@ -1,7 +1,8 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import NotesPage from './pages/NotesPage';
+import NotesPage from './pages/NotesPage/NotesPage';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css'
 
 
 function App() {
