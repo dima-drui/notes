@@ -89,10 +89,9 @@ export const useNotesStore = create<NotesState>( (set, get) => ({
 
   updateNote: async (note: NoteUpdateParams) => {
     try {
-      throw new Error('errr')
-      // const updateQty = await DB.update(note);
-      // get().updateListNote(note)
-      // return updateQty
+      const updateQty = await DB.update(note);
+      get().updateListNote(note)
+      return updateQty
     } catch (error) {
       logger.error('Error updating note', error);
       return {error};
