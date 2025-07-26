@@ -98,6 +98,7 @@ export const useNotesStore = create<NotesState>( (set, get) => ({
   },
 
   updateListNote: (note: NoteUpdateParams) => {
+    try {
       set((s) => ({ 
         noteList: s.noteList.map((n) =>
           n.id === note.id
@@ -105,6 +106,10 @@ export const useNotesStore = create<NotesState>( (set, get) => ({
             : n
         ),
       }));
+    } catch (error) {
+      logger.error('Error updating list w note', {error, note});
+      throw error;
+    }
   },
 
   sortNotes: (criteria: NoteSortCriteria) => {
