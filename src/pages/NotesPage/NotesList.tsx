@@ -1,5 +1,5 @@
-import React from 'react';
-import { ListGroup, Button, Dropdown, DropdownButton } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { ListGroup, Button, Dropdown, DropdownButton, Form } from 'react-bootstrap';
 import { NoteSortCriteria, useNotesStore } from '../../store/notesStore';
 import { NoteNew } from '../../models/Note';
 import { NoteListIem } from './NoteListIem';
@@ -27,6 +27,16 @@ const NotesList: React.FC = () => {
   const sortNotes = useNotesStore((s) => s.sortNotes);
   const currentSort = useNotesStore(s => s.currentSort);
   const toast = useToastStore();
+
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredNotes = noteList.filter(note => 
+    note.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
 
   const handleSelect = async (_: React.MouseEvent, noteId: string) => {
     const res = await setSelectedNote(noteId);
@@ -67,7 +77,13 @@ const NotesList: React.FC = () => {
       </Button>
     </div>
 
-    <div className='w-100'>
+    <div className='d-flex fleex-row gap-1 w-100'>
+      <Form.Control 
+        type="text" 
+        placeholder="Search by title..." 
+        value={searchQuery} 
+        onChange={handleSearchChange} 
+      />
       <DropdownButton id="dropdown-sort" title="Sort" variant="outline-secondary">
         { sortOptions.map( (option) => (
           <Dropdown.Item 
@@ -85,7 +101,7 @@ const NotesList: React.FC = () => {
       variant="flush"
       className='h-100 overflow-auto hide-scrollbar'
     >
-      { noteList.map( (note) => (
+      { filteredNotes.map( (note) => (
         <ListGroup.Item 
           key={note.id} 
           as='div'
