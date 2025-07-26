@@ -18,7 +18,7 @@ export const NoteListIem = ({note, handleSelect, handleRemove}: NoteItem) => {
         className="text-start text-truncate w-100"
         onClick={ (e) => handleSelect(e, note.id) }
         >
-          {note.title}
+          <span>{note.title}</span>
       </Button>
       <Button 
         variant="link" 

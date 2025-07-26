@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
 import NotesList from './NotesList';
 import NoteEditor from './NoteEditor';
 import { useNotesStore } from '../../store/notesStore';
 import './NotesPage.css';
 
 
+const NOTE_LIST_INIT_W = 300;
+const NOTE_LIST_W_MIN = 150;
+const NOTE_LIST_W_MAX = 600;
+
+
 const NotesPage: React.FC = () => {
 
   const loadNotesList = useNotesStore( s => s.loadNotesList );
-  const [panelWidth, setPanelWidth] = useState(300); // Default width in pixels
+  const [panelWidth, setPanelWidth] = useState(NOTE_LIST_INIT_W);
 
   useEffect( () => {
     loadNotesList()
@@ -21,7 +25,7 @@ const NotesPage: React.FC = () => {
 
     const handleMouseMove = (moveEvent: MouseEvent) => {
       const newWidth = startWidth + (moveEvent.clientX - startX);
-      if (newWidth > 150 && newWidth < 600) { // Set min and max width
+      if (newWidth > NOTE_LIST_W_MIN && newWidth < NOTE_LIST_W_MAX) { // Set min and max width
         setPanelWidth(newWidth);
       }
     };
