@@ -39,12 +39,8 @@ const NotesList: React.FC = () => {
     note.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const debouncedSearchChange = debounce((value: string) => {
-    setSearchQuery(value);
-  }, 300); // Adjust debounce delay as needed
-
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    debouncedSearchChange(e.target.value);
+    setSearchQuery(e.target.value);
   };
 
   const handleSelect = async (_: React.MouseEvent, noteId: string) => {
