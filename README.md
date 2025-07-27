@@ -1,5 +1,3 @@
-# My New App
-
 ## Description
 This is an Electron application built with React, TypeScript, and Webpack. It includes features such as note management and uses localStorage for data persistence.
 
