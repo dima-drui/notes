@@ -42,7 +42,9 @@ export const useNotesStore = create<NotesState>( (set, get) => ({
 
   removeNote: async (id: string) => {
     try {
-     return await DB.delete(id);
+      const removeCount = await DB.delete(id);
+      await get().setSelectedNote();
+      return removeCount;
     } catch (error) {
       logger.error('Error removing note', error);
       return { error };

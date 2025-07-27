@@ -1,8 +1,8 @@
 {
-  "name": "my-new-app",
-  "productName": "my-new-app",
+  "name": "evernetix-notes",
+  "productName": "evernetix-notes",
   "version": "1.0.0",
-  "description": "My Electron application description",
+  "description": "My Electron application description | evernetix-notes",
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",

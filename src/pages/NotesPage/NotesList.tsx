@@ -25,6 +25,7 @@ const NotesList: React.FC = () => {
   const removeNote = useNotesStore( s => s.removeNote);
   const setSelectedNote = useNotesStore( s => s.setSelectedNote);
   const sortNotes = useNotesStore((s) => s.sortNotes);
+  const loadNotesList = useNotesStore((s) => s.loadNotesList);
   const currentSort = useNotesStore(s => s.currentSort);
   const toast = useToastStore();
 
@@ -47,8 +48,11 @@ const NotesList: React.FC = () => {
 
   const handleRemove = async (e: React.MouseEvent, noteId: string) => {
     e.stopPropagation(); 
-    const res = await removeNote(noteId);
-    if (res == 0 || (typeof res !== 'number' && res.error)) {
+    const removeCount = await removeNote(noteId);
+    if (typeof removeCount === 'number' && removeCount > 0 ) {
+      await loadNotesList()
+    }
+    else {
       toast.addToast("Failed to remove the note. Please try again.", ToastType.ERROR);
     }
   };
@@ -58,8 +62,12 @@ const NotesList: React.FC = () => {
       title: "New Note",
       content: ""
     };
-    const res = await addNote(newNote);
-    if (typeof res != 'string' && res.error) {
+    const id = await addNote(newNote);
+    if (typeof id === 'string') {
+      await loadNotesList()
+      await setSelectedNote(id)
+    }
+    else {
       toast.addToast("Failed to create a note. Please try again.", ToastType.ERROR);
     }
   };

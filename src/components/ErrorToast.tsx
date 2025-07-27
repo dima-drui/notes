@@ -7,8 +7,6 @@ const ErrorToast: React.FC = () => {
   const toasts = useToastStore( s => s.toasts);
   const removeToast = useToastStore( s => s.removeToast);
 
-  console.log('toasts', toasts)
-
   return (
     <ToastContainer position="top-end" className="p-3">
       {toasts.map((toast) => (
