@@ -21,12 +21,14 @@ const sortOptions: { label: string; value: NoteSortCriteria; icon: string }[] = 
 const NotesList: React.FC = () => {
 
   const noteList = useNotesStore( s => s.noteList);
+  const currentNote = useNotesStore( s => s.currentNote);
   const addNote = useNotesStore( s => s.addNote);
   const removeNote = useNotesStore( s => s.removeNote);
   const setSelectedNote = useNotesStore( s => s.setSelectedNote);
   const sortNotes = useNotesStore((s) => s.sortNotes);
   const loadNotesList = useNotesStore((s) => s.loadNotesList);
   const currentSort = useNotesStore(s => s.currentSort);
+
   const toast = useToastStore();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -72,7 +74,6 @@ const NotesList: React.FC = () => {
     }
   };
 
-
   return (<div className='d-flex flex-column gap-2 h-100 w-100'>
 
     <div className='w-100'>
@@ -113,7 +114,8 @@ const NotesList: React.FC = () => {
         <ListGroup.Item 
           key={note.id} 
           as='div'
-          className="w-100"
+          className='w-100'
+          variant={ currentNote?.id === note.id ? 'secondary' : null }
           >
             <NoteListIem 
               note={note}
