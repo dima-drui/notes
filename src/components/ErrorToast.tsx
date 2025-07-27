@@ -1,6 +1,6 @@
 import React from 'react';
 import { Toast, ToastContainer } from 'react-bootstrap';
-import { useToastStore } from '../store/toastStore';
+import { useToastStore } from '@/store/toastStore';
 
 
 const ErrorToast: React.FC = () => {

@@ -1,4 +1,4 @@
-import { isDev } from '../config';
+import { isDev } from '@/config';
 
 
 export const logger = {

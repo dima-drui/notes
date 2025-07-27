@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { ListGroup, Button, Dropdown, DropdownButton, Form } from 'react-bootstrap';
-import { NoteSortCriteria, useNotesStore } from '../../store/notesStore';
-import { NoteNew } from '../../models/Note';
-import { NoteListIem } from './NoteListIem';
-import { icons } from '../../utils/icons';
-import './NotesList.css';
-import { ToastType, useToastStore } from '../../store/toastStore';
 import { FixedSizeList as VirtualizedList } from 'react-window';
+import { NoteSortCriteria, useNotesStore } from '@/store/notesStore';
+import { NoteNew } from '@/models/Note';
+import { NoteListIem } from '@/pages/NotesPage/NoteListIem';
+import { icons } from '@/utils/icons';
+import { ToastType, useToastStore } from '@/store/toastStore';
+import '@/pages/NotesPage/notes-list.css';
 
 
 const sortOptions: { label: string; value: NoteSortCriteria; icon: string }[] = [

@@ -1,6 +1,6 @@
 import { v4 } from 'uuid';
-import { Note, NoteNew } from '../models/Note';
-import { EntityQueryOptions } from '../models';
+import { Note, NoteNew } from '@/models/Note';
+import { EntityQueryOptions } from '@/models';
 
 
 type NoteReadParams = {

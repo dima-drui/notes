@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { Form } from 'react-bootstrap';
-import { useNotesStore } from '../../store/notesStore';
+import { useNotesStore } from '@/store/notesStore';
 import { useForm } from 'react-hook-form';
-import { useToastStore, ToastType } from '../../store/toastStore';
+import { useToastStore, ToastType } from '@/store/toastStore';
 
 
 const NoteEditor: React.FC = () => {
@@ -41,7 +41,9 @@ const NoteEditor: React.FC = () => {
   useEffect( () => {
     initValues()
     return () => {
-      save()
+      if (currentNote == null) return;
+      const values = getValues();
+      updateNote({ id: currentNote.id, ...values });
     }
   }, [ currentNote?.id ]);
 

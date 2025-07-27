@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import NotesList from './NotesList';
 import NoteEditor from './NoteEditor';
-import { useNotesStore } from '../../store/notesStore';
-import './NotesPage.css';
+import { useNotesStore } from '@/store/notesStore';
+import './notes-page.css';
 
 
 const NOTE_LIST_INIT_W = 300;
@@ -25,7 +25,7 @@ const NotesPage: React.FC = () => {
 
     const handleMouseMove = (moveEvent: MouseEvent) => {
       const newWidth = startWidth + (moveEvent.clientX - startX);
-      if (newWidth > NOTE_LIST_W_MIN && newWidth < NOTE_LIST_W_MAX) { // Set min and max width
+      if (newWidth > NOTE_LIST_W_MIN && newWidth < NOTE_LIST_W_MAX) {
         setPanelWidth(newWidth);
       }
     };

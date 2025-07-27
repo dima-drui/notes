@@ -1,8 +1,8 @@
 import { create } from 'zustand';
-import { Note, NoteNew } from '../models/Note';
-import { DB, NoteUpdateParams } from '../services/db';
-import { EntityQueryOptions } from '../models';
-import { logger } from '../utils/logger';
+import { Note, NoteNew } from '@/models/Note';
+import { DB, NoteUpdateParams } from '@/services/db';
+import { EntityQueryOptions } from '@/models';
+import { logger } from '@/utils/logger';
 
 
 export type NoteItemList = Pick<Note, 'id' | 'title' | 'createdAt' | 'updatedAt'>;
@@ -42,9 +42,8 @@ export const useNotesStore = create<NotesState>( (set, get) => ({
 
   removeNote: async (id: string) => {
     try {
-      const removeCount = await DB.delete(id);
-      await get().setSelectedNote();
-      return removeCount;
+      set({ currentNote: null });
+      return await DB.delete(id);
     } catch (error) {
       logger.error('Error removing note', error);
       return { error };
@@ -61,7 +60,8 @@ export const useNotesStore = create<NotesState>( (set, get) => ({
           return { error: "Selected note was not found" };
         }
         set({ currentNote: note || null });
-      } else {
+      } 
+      else {
         set({ currentNote: null });
       }
     } catch (error) {

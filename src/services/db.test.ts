@@ -1,5 +1,5 @@
-import { DB } from '../services/db';
-import { NoteNew } from '../models/Note';
+import { DB } from '@/services/db';
+import { NoteNew } from '@/models/Note';
 
 describe('DB.create', () => {
   const originalLocalStorage = globalThis.localStorage;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, ButtonGroup } from 'react-bootstrap';
-import { NoteItemList } from '../../store/notesStore';
-import { icons } from '../../utils/icons';
+import { NoteItemList } from '@/store/notesStore';
+import { icons } from '@/utils/icons';
 
 
 type NoteItem = {

@@ -8,16 +8,10 @@ This is an Electron application built with React, TypeScript, and Webpack. It in
 - npm (v7 or later)
 
 ## Installation
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   cd my-new-app
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+Install dependencies:
+```bash
+npm install
+```
 
 ## Running the Application
 To start the Electron application, run:
