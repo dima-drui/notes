@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ListGroup, Button, Dropdown, DropdownButton, Form } from 'react-bootstrap';
 import { NoteSortCriteria, useNotesStore } from '../../store/notesStore';
 import { NoteNew } from '../../models/Note';
@@ -6,6 +6,8 @@ import { NoteListIem } from './NoteListIem';
 import { icons } from '../../utils/icons';
 import './NotesList.css';
 import { ToastType, useToastStore } from '../../store/toastStore';
+import { FixedSizeList as VirtualizedList } from 'react-window';
+import { debounce } from 'lodash';
 
 
 
@@ -37,8 +39,12 @@ const NotesList: React.FC = () => {
     note.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const debouncedSearchChange = debounce((value: string) => {
+    setSearchQuery(value);
+  }, 300); // Adjust debounce delay as needed
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
+    debouncedSearchChange(e.target.value);
   };
 
   const handleSelect = async (_: React.MouseEvent, noteId: string) => {
@@ -106,25 +112,31 @@ const NotesList: React.FC = () => {
       </DropdownButton>
     </div>
 
-    <ListGroup 
-      variant="flush"
-      className='h-100 overflow-auto hide-scrollbar'
+    <VirtualizedList
+      height={window.innerHeight} // Use all available height minus some padding for other elements
+      itemCount={filteredNotes.length}
+      itemSize={50} // Adjust item size as needed
+      width="100%"
+      className="hide-scrollbar" // Add class to hide scrollbar
     >
-      { filteredNotes.map( (note) => (
-        <ListGroup.Item 
-          key={note.id} 
-          as='div'
-          className='w-100'
-          variant={ currentNote?.id === note.id ? 'secondary' : null }
-          >
-            <NoteListIem 
-              note={note}
-              handleSelect={handleSelect}
-              handleRemove={handleRemove}
+      {({ index, style }: {index: number, style: any}) => {
+        const note = filteredNotes[index];
+        return (
+          <div style={style} key={note.id}>
+            <ListGroup.Item 
+              as='div'
+              className={`w-100 ${note.id === currentNote?.id ? 'selected-note' : ''}`}
+            >
+              <NoteListIem 
+                note={note}
+                handleSelect={handleSelect}
+                handleRemove={handleRemove}
               />
-        </ListGroup.Item>
-      )) }
-    </ListGroup>
+            </ListGroup.Item>
+          </div>
+        );
+      }}
+    </VirtualizedList>
 
     </div>
   );
