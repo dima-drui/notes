@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { ListGroup, Button, Dropdown, DropdownButton, Form } from 'react-bootstrap';
 import { NoteSortCriteria, useNotesStore } from '../../store/notesStore';
 import { NoteNew } from '../../models/Note';
@@ -7,8 +7,6 @@ import { icons } from '../../utils/icons';
 import './NotesList.css';
 import { ToastType, useToastStore } from '../../store/toastStore';
 import { FixedSizeList as VirtualizedList } from 'react-window';
-import { debounce } from 'lodash';
-
 
 
 const sortOptions: { label: string; value: NoteSortCriteria; icon: string }[] = [
